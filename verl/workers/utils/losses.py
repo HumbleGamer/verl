@@ -158,11 +158,23 @@ def value_loss(config: CriticConfig, model_output, data: TensorDict, dp_group=No
     """
     vpreds = no_padding_2_padding(model_output["values"], data)  # (bsz, response_length)
 
-    # select fields and convert to padded tensor
-    data = data.select("values", "returns", "response_mask").to_padded_tensor()
+    # VAGEN: turn-level / bi-level advantage estimators write `returns` only at one
+    # anchor token per turn and leave the rest at a sentinel value. `value_mask` marks
+    # the positions that actually carry return supervision, so the critic must not be
+    # trained on the sentinel ones. The field is optional -- when absent, every
+    # response token is supervised, which is verl's default behaviour.
+    # NOTE: `select` is a whitelist, so the key has to be requested explicitly here.
+    fields = ["values", "returns", "response_mask"]
+    has_value_mask = "value_mask" in data.keys()
+    if has_value_mask:
+        fields.append("value_mask")
+
+    data = data.select(*fields).to_padded_tensor()
     values = data["values"]
     returns = data["returns"]
     response_mask = data["response_mask"].to(bool)
+    if has_value_mask:
+        response_mask = response_mask & data["value_mask"].to(bool)
 
     vf_loss, vf_clipfrac = compute_value_loss(
         vpreds=vpreds,
