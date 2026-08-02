@@ -45,23 +45,23 @@ BSZ, RESP = 2, 6
 CONFIG = SimpleNamespace(cliprange_value=0.5, loss_agg_mode="token-mean")
 
 
-def _data(returns: torch.Tensor, value_mask: torch.Tensor | None = None) -> TensorDict:
+def _data(returns, value_mask=None, response_mask=None) -> TensorDict:
     fields = {
         "values": torch.zeros(BSZ, RESP),
         "returns": returns,
-        "response_mask": torch.ones(BSZ, RESP, dtype=torch.long),
+        "response_mask": torch.ones(BSZ, RESP, dtype=torch.long) if response_mask is None else response_mask,
     }
     if value_mask is not None:
         fields["value_mask"] = value_mask
     return TensorDict(fields, batch_size=[BSZ])
 
 
-def _loss(returns, value_mask=None) -> float:
+def _loss(returns, value_mask=None, response_mask=None) -> float:
     """Run value_loss with a fixed vpreds so only the masking logic varies."""
     vpreds = torch.full((BSZ, RESP), 0.3)
     model_output = {"values": vpreds}
     with patch.object(losses_mod, "no_padding_2_padding", lambda t, d: vpreds):
-        loss, _ = losses_mod.value_loss(CONFIG, model_output, _data(returns, value_mask))
+        loss, _ = losses_mod.value_loss(CONFIG, model_output, _data(returns, value_mask, response_mask))
     return loss.item()
 
 
@@ -115,12 +115,28 @@ def test_bool_and_int_masks_agree():
     assert _loss(returns, mask_int) == _loss(returns, mask_int.bool())
 
 
-def test_all_zero_mask_yields_zero_loss():
-    """Degenerate but well-defined: nothing supervised means nothing to learn from.
-    Documented here so a future NaN regression is caught rather than silently trained on."""
+def test_empty_mask_nan_is_preexisting_upstream_behaviour():
+    """An empty effective mask yields NaN -- and that is upstream's behaviour, not ours.
+
+    ``agg_loss(..., "token-mean")`` computes ``masked_sum(...) / loss_mask.sum()``; with
+    an empty mask that is 0/0. Reachable today without this patch, because
+    ``construct_minimal_padding_template`` gives padding rows an all-zero
+    ``response_mask`` (padding_utils.py) -- so a micro-batch consisting only of padding
+    rows already NaNs on unmodified verl.
+
+    This test pins the equivalence rather than the value: if ``value_mask`` ever makes
+    an empty mask reachable in a case where ``response_mask`` alone would not, the two
+    branches diverge and this fails.
+
+    Not reachable via `value_mask` on real rows in practice: turn-level GAE writes one
+    anchor per turn, and a real row always has at least one turn.
+    """
     returns = _base_returns()
     zeros = torch.zeros(BSZ, RESP, dtype=torch.long)
+    ones = torch.ones(BSZ, RESP, dtype=torch.long)
 
-    loss = _loss(returns, zeros)
-    assert loss == loss, "all-zero value_mask produced NaN"
-    assert loss == 0.0
+    upstream_nan = _loss(returns, response_mask=zeros)  # no value_mask at all
+    ours_nan = _loss(returns, value_mask=zeros, response_mask=ones)
+
+    assert upstream_nan != upstream_nan, "upstream no longer NaNs on an empty mask -- re-evaluate"
+    assert ours_nan != ours_nan, "value_mask path diverged from the upstream empty-mask path"
