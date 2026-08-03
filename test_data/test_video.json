@@ -1,0 +1,692 @@
+[
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  },
+  {
+    "problem_id": 17,
+    "problem": "How does the crowd's excitement change as the match progresses?",
+    "data_type": "video",
+    "prompt": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "video",
+            "video": "LLaVA-Video-178K/academic_source/activitynet/v_2g9GrshWQrU.mp4"
+          },
+          {
+            "type": "text",
+            "text": "How does the crowd's excitement change as the match progresses? A. It fluctuates; B. It decreases; C. It builds up; D. It remains the same. Put your answer in <answer></answer>"
+          }
+        ]
+      }
+    ],
+    "problem_type": "multiple choice",
+    "solution": "C",
+    "data_source": "LLaVA-Video-178K/2_3_m_academic_v0_1"
+  }
+]

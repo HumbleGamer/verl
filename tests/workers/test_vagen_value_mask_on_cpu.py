@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""VAGEN fork patch: optional ``value_mask`` in ``workers/utils/losses.py::value_loss``.
+"""Optional ``value_mask`` in ``workers/utils/losses.py::value_loss``.
 
 Turn-level and bi-level advantage estimators write ``returns`` at one anchor token per
 turn and leave the rest at a sentinel; ``value_mask`` marks the positions that actually
@@ -145,22 +145,14 @@ def test_empty_mask_nan_is_preexisting_upstream_behaviour():
 # --------------------------------------------------------------------------------
 # Transport: does ``value_mask`` actually survive the trip to ``value_loss``?
 #
-# The tests above prove the masking maths is right *given* the key arrives. On the
-# pre-0.8 stack it never did, and the reason was a second, independent layer:
-# ``dp_critic.py`` built a whitelist
+# The tests above prove the masking maths is right *given* the key arrives. Whether it
+# arrives is a separate question, and a fragile one: a whitelist anywhere on the critic
+# path drops the key, after which ``response_mask & value_mask`` quietly degrades to the
+# plain ``response_mask``.
 #
-#     select_keys = ["input_ids", "responses", "response_mask", "attention_mask",
-#                    "position_ids", "values", "returns"]
-#
-# before micro-batching, so ``value_mask`` was dropped and the ``.get("value_mask",
-# response_mask)`` default silently restored the full mask. Fixing the estimator-name
-# predicate alone changed nothing -- measured: ``critic/vf_loss`` still 568, and
-# ``critic/vpred_mean`` still ran away to -77 (i.e. towards the -100 sentinel).
-#
-# v0.8.0 routes the critic through ``left_right_2_no_padding`` instead, which mutates a
-# TensorDict in place rather than selecting from it. That is why the fix in
-# ``value_loss`` is sufficient here -- but it is an assumption about upstream code, so
-# it gets pinned rather than trusted.
+# The current path routes through ``left_right_2_no_padding``, which mutates a
+# TensorDict in place rather than selecting from it, so the change in ``value_loss`` is
+# sufficient. That is an assumption about code owned elsewhere, so pin it.
 # --------------------------------------------------------------------------------
 
 
@@ -192,9 +184,10 @@ def _padded_batch() -> TensorDict:
 def test_value_mask_survives_left_right_2_no_padding():
     """★ The transport guard.
 
-    If a future upstream revision reintroduces a whitelist on the critic path, the key
-    disappears and the critic silently trains on the sentinel again -- with no error and
-    a *healthy-looking* ``vf_explained_var``. Fail loudly here instead.
+    If a revision reintroduces a whitelist on the critic path, the key disappears and
+    the critic silently trains on the sentinel again -- no error, and a
+    *healthy-looking* ``vf_explained_var``, since a constant-dominated target is
+    trivially explainable. Fail loudly here instead.
     """
     from verl.workers.utils.padding import left_right_2_no_padding
 

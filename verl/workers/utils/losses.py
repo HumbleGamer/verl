@@ -158,7 +158,7 @@ def value_loss(config: CriticConfig, model_output, data: TensorDict, dp_group=No
     """
     vpreds = no_padding_2_padding(model_output["values"], data)  # (bsz, response_length)
 
-    # VAGEN: turn-level / bi-level advantage estimators write `returns` only at one
+    # Turn-level / bi-level advantage estimators write `returns` only at one
     # anchor token per turn and leave the rest at a sentinel value. `value_mask` marks
     # the positions that actually carry return supervision, so the critic must not be
     # trained on the sentinel ones. The field is optional -- when absent, every
