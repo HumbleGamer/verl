@@ -140,3 +140,81 @@ def test_empty_mask_nan_is_preexisting_upstream_behaviour():
 
     assert upstream_nan != upstream_nan, "upstream no longer NaNs on an empty mask -- re-evaluate"
     assert ours_nan != ours_nan, "value_mask path diverged from the upstream empty-mask path"
+
+
+# --------------------------------------------------------------------------------
+# Transport: does ``value_mask`` actually survive the trip to ``value_loss``?
+#
+# The tests above prove the masking maths is right *given* the key arrives. On the
+# pre-0.8 stack it never did, and the reason was a second, independent layer:
+# ``dp_critic.py`` built a whitelist
+#
+#     select_keys = ["input_ids", "responses", "response_mask", "attention_mask",
+#                    "position_ids", "values", "returns"]
+#
+# before micro-batching, so ``value_mask`` was dropped and the ``.get("value_mask",
+# response_mask)`` default silently restored the full mask. Fixing the estimator-name
+# predicate alone changed nothing -- measured: ``critic/vf_loss`` still 568, and
+# ``critic/vpred_mean`` still ran away to -77 (i.e. towards the -100 sentinel).
+#
+# v0.8.0 routes the critic through ``left_right_2_no_padding`` instead, which mutates a
+# TensorDict in place rather than selecting from it. That is why the fix in
+# ``value_loss`` is sufficient here -- but it is an assumption about upstream code, so
+# it gets pinned rather than trusted.
+# --------------------------------------------------------------------------------
+
+
+def _padded_batch() -> TensorDict:
+    """A left-right padded critic batch with one padding column on each side."""
+    attention_mask = torch.ones(BSZ, RESP, dtype=torch.long)
+    attention_mask[:, 0] = 0  # left pad
+    attention_mask[:, -1] = 0  # right pad
+    response_mask = torch.zeros(BSZ, RESP, dtype=torch.long)
+    response_mask[:, 2:-1] = 1
+
+    value_mask = torch.zeros(BSZ, RESP, dtype=torch.long)
+    value_mask[:, 2] = 1  # one supervised anchor per row, as turn-level GAE emits
+
+    return TensorDict(
+        {
+            "input_ids": torch.arange(BSZ * RESP).reshape(BSZ, RESP),
+            "attention_mask": attention_mask,
+            "response_mask": response_mask,
+            "position_ids": torch.arange(RESP).expand(BSZ, RESP).contiguous(),
+            "values": torch.zeros(BSZ, RESP),
+            "returns": torch.randn(BSZ, RESP),
+            "value_mask": value_mask,
+        },
+        batch_size=[BSZ],
+    )
+
+
+def test_value_mask_survives_left_right_2_no_padding():
+    """★ The transport guard.
+
+    If a future upstream revision reintroduces a whitelist on the critic path, the key
+    disappears and the critic silently trains on the sentinel again -- with no error and
+    a *healthy-looking* ``vf_explained_var``. Fail loudly here instead.
+    """
+    from verl.workers.utils.padding import left_right_2_no_padding
+
+    out = left_right_2_no_padding(_padded_batch())
+
+    assert "value_mask" in out.keys(), (
+        "value_mask was dropped on the critic path; the critic will fall back to the "
+        "full response_mask and regress towards the -100 sentinel"
+    )
+
+
+def test_value_mask_stays_dense_and_aligned_with_response_mask():
+    """``value_loss`` does ``response_mask & value_mask``, so the two must keep the same
+    shape and neither may be converted to a nested tensor (``input_ids`` and
+    ``position_ids`` are, which is exactly why this is worth checking)."""
+    from verl.workers.utils.padding import left_right_2_no_padding
+
+    out = left_right_2_no_padding(_padded_batch())
+
+    assert not out["value_mask"].is_nested, "value_mask must stay dense to align with response_mask"
+    assert out["value_mask"].shape == out["response_mask"].shape
+    # The `&` in value_loss requires an integral/bool dtype on both sides.
+    assert not out["value_mask"].is_floating_point()
