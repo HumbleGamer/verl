@@ -150,20 +150,23 @@ class SeparateRayPPOTrainer(RayPPOTrainer):
             critic_cfg = omega_conf_to_dataclass(self.config.critic)
 
             # convert critic_cfg into TrainingWorkerConfig for the unified model engine worker
-            from verl.workers.config import FSDPEngineConfig
+            from verl.workers.config import EngineConfig
             from verl.workers.engine_workers import TrainingWorkerConfig
 
             self.orig_critic_cfg = critic_cfg
-            if self.orig_critic_cfg.strategy == "fsdp":
-                engine_config: FSDPEngineConfig = self.orig_critic_cfg.model.fsdp_config
-                engine_config.infer_max_token_len_per_gpu = critic_cfg.ppo_infer_max_token_len_per_gpu
-                engine_config.max_token_len_per_gpu = critic_cfg.ppo_max_token_len_per_gpu
-            else:
-                raise NotImplementedError(f"Unknown strategy {self.orig_critic_cfg.strategy=}")
+            # Read `engine` / `model`, matching RayPPOTrainer. The engine refactor moved
+            # the engine config out from under `model`, so `critic.model` is an
+            # HFModelConfig with no `fsdp_config`, and `model_config` no longer exists
+            # on the critic dataclass at all. Reading the pre-refactor names raised
+            # AttributeError for any run with a critic; nothing overrides this method,
+            # so the whole separated lineage could only run critic-free algorithms.
+            engine_config: EngineConfig = self.orig_critic_cfg.engine
+            engine_config.infer_max_token_len_per_gpu = critic_cfg.ppo_infer_max_token_len_per_gpu
+            engine_config.max_token_len_per_gpu = critic_cfg.ppo_max_token_len_per_gpu
 
             critic_cfg = TrainingWorkerConfig(
                 model_type="value_model",
-                model_config=self.orig_critic_cfg.model_config,
+                model_config=self.orig_critic_cfg.model,
                 engine_config=engine_config,
                 optimizer_config=self.orig_critic_cfg.optim,
                 checkpoint_config=self.orig_critic_cfg.checkpoint,
