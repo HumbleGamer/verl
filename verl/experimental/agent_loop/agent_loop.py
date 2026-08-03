@@ -812,6 +812,12 @@ class AgentLoopWorker:
         if self.processor is None:
             return compute_position_id_with_mask(attention_mask)  # (1, seq_len)
 
+        # Only mrope models get a get_rope_index binding (see utils/tokenizer.py). Other
+        # VLMs -- InternVL, LLaVA and friends -- index positions the ordinary way, so
+        # they take the same path as a text-only model rather than crashing here.
+        if not hasattr(self.processor, "get_rope_index"):
+            return compute_position_id_with_mask(attention_mask)  # (1, seq_len)
+
         multi_modal_kwargs = {
             "image_grid_thw": multi_modal_inputs.get("image_grid_thw"),
             "video_grid_thw": multi_modal_inputs.get("video_grid_thw"),

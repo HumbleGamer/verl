@@ -225,7 +225,16 @@ def hf_processor(name_or_path, **kwargs):
             case "MllamaProcessor":
                 pass  # MllamaProcessor and MllamaModel doesn't have get_rope_index property
             case _:
-                raise ValueError(f"Unsupported processor type: {processor.__class__.__name__}")
+                # Only mrope models need a get_rope_index binding; the rest use ordinary
+                # position ids. Raising here would be caught below and turn the
+                # processor into None, which reads as "text-only model" and surfaces
+                # much later as a confusing failure -- so leave it unbound instead.
+                # `_compute_position_ids` checks for the attribute before using it.
+                warnings.warn(
+                    f"{processor.__class__.__name__} has no known get_rope_index; assuming ordinary "
+                    "position ids. Multimodal position ids will be wrong if this model uses mrope.",
+                    stacklevel=1,
+                )
 
         if model_class is not None:
             processor.get_rope_index = types.MethodType(model_class.get_rope_index, processor)
