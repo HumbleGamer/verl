@@ -315,6 +315,10 @@ def valuehead_forward_value_only(
     """
     kwargs["output_hidden_states"] = True
     kwargs["past_key_values"] = past_key_values
+    # The hidden states are read off the output below, so the dict form is required
+    # either way -- and verl's fused-kernel forwards refuse to run without it. Most
+    # models default to True, which is why only some families surfaced this.
+    kwargs["return_dict"] = True
 
     if self.is_peft_model and self.pretrained_model.active_peft_config.peft_type == "PREFIX_TUNING":
         kwargs.pop("past_key_values")

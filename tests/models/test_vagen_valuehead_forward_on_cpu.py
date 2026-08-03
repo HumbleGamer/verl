@@ -158,3 +158,36 @@ def test_non_prefix_peft_keeps_past_key_values():
     m.forward(input_ids=_ids(), past_key_values="kept")
 
     assert m.pretrained_model.seen_kwargs["past_key_values"] == "kept"
+
+
+def test_forward_requests_the_dict_output():
+    """★ The patch reads ``hidden_states`` off the result, so the dict form is required
+    -- and verl's fused-kernel forwards raise outright without it. Most models default
+    to returning a dict, so only some families surfaced this.
+    """
+    from types import SimpleNamespace
+
+    import torch
+
+    from verl.models.transformers.monkey_patch import valuehead_forward_value_only
+
+    seen = {}
+
+    def fake_base(**kwargs):
+        seen.update(kwargs)
+        return SimpleNamespace(hidden_states=[torch.zeros(1, 2, 4)], loss=None)
+
+    class _V:
+        summary = SimpleNamespace(weight=torch.zeros(1, 4))
+
+        def __call__(self, x):
+            return torch.zeros(1, 2)
+
+    model = SimpleNamespace(
+        is_peft_model=False, pretrained_model=fake_base, v_head=_V(), _return_value=None
+    )
+
+    valuehead_forward_value_only(model, input_ids=torch.zeros(1, 2, dtype=torch.long))
+
+    assert seen.get("return_dict") is True, f"forward did not request a dict: {sorted(seen)}"
+    assert seen.get("output_hidden_states") is True
