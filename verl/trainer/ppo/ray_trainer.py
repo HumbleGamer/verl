@@ -19,6 +19,7 @@ This trainer supports model-agonistic model initialization with huggingface
 """
 
 import json
+import inspect
 import os
 import uuid
 from collections import defaultdict
@@ -255,9 +256,14 @@ def compute_advantage(
             adv_kwargs["index"] = data.non_tensor_batch["uid"]
         if "reward_baselines" in data.batch:  # optional
             adv_kwargs["reward_baselines"] = data.batch["reward_baselines"]
-        # GDPO: pass raw data for per-dimension reward extraction
-        if adv_estimator in (AdvantageEstimator.GDPO, "gdpo"):
+        # Some estimators need columns beyond the reward/mask pair -- GDPO reads
+        # per-dimension rewards, turn-level estimators group rows by trajectory and turn.
+        # Rather than naming each one here, hand over the raw containers to estimators
+        # that ask for them by declaring the parameter.
+        _adv_params = inspect.signature(adv_estimator_fn).parameters
+        if "non_tensor_batch" in _adv_params or adv_estimator in (AdvantageEstimator.GDPO, "gdpo"):
             adv_kwargs["non_tensor_batch"] = data.non_tensor_batch
+        if "batch" in _adv_params or adv_estimator in (AdvantageEstimator.GDPO, "gdpo"):
             adv_kwargs["batch"] = data.batch
         # Add sum_pi_squared for Optimal Token Baseline
         if adv_estimator in (AdvantageEstimator.OPTIMAL_TOKEN_BASELINE, AdvantageEstimator.TIR_OPTIMAL_TOKEN_BASELINE):
