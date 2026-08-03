@@ -556,6 +556,13 @@ class vLLMHttpServer:
             )
 
         extra_fields = {"global_steps": self.global_steps}
+        # The prompt vLLM ran is not the one it was handed: multimodal placeholders
+        # arrive deduplicated and are expanded here from the images. Report the length
+        # so a caller can check that the sequence it trains on is the sequence that
+        # produced the response -- if the two preprocessing paths tile an image
+        # differently, nothing else reveals it.
+        if getattr(final_res, "prompt_token_ids", None) is not None:
+            extra_fields["prompt_token_count"] = len(final_res.prompt_token_ids)
         extract_prompt_logprobs(
             output=final_res,
             num_prompt_logprobs=sampling_params.prompt_logprobs,
