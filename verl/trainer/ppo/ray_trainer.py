@@ -554,8 +554,12 @@ class RayPPOTrainer:
                 dump_path=rollout_data_dir,
             )
 
-    def _maybe_log_val_generations(self, inputs, outputs, scores):
-        """Log a table of validation samples to the configured logger (wandb or swanlab)"""
+    def _maybe_log_val_generations(self, inputs, outputs, scores, images=None):
+        """Log a table of validation samples to the configured logger (wandb or swanlab)
+
+        ``images`` is accepted and ignored here so that a subclass whose task renders its
+        observations can add the column without also owning a copy of ``_validate``.
+        """
 
         generations_to_log = self.config.trainer.log_val_generations
 
@@ -613,6 +617,9 @@ class RayPPOTrainer:
         sample_scores = []
         sample_turns = []
         sample_uids = []
+        # Frames an agent loop chose to surface, if any. For a task whose observations
+        # are rendered, the text alone does not say what the model was looking at.
+        sample_images = []
 
         for test_data in self.val_dataloader:
             test_batch = DataProto.from_single_dict(test_data)
@@ -678,6 +685,14 @@ class RayPPOTrainer:
             sample_inputs.extend(input_texts)
             sample_uids.extend(test_batch.non_tensor_batch["uid"])
 
+            batch_images = test_batch.non_tensor_batch.get("image_data")
+            if batch_images is None:
+                sample_images.extend([None] * len(output_texts))
+            else:
+                sample_images.extend(
+                    batch_images.tolist() if hasattr(batch_images, "tolist") else list(batch_images)
+                )
+
             # evaluate using reward_function
             reward_tensor, reward_extra_info = extract_reward(test_batch)
 
@@ -699,7 +714,9 @@ class RayPPOTrainer:
 
             data_source_lst.append(test_batch.non_tensor_batch.get("data_source", ["unknown"] * reward_tensor.shape[0]))
 
-        self._maybe_log_val_generations(inputs=sample_inputs, outputs=sample_outputs, scores=sample_scores)
+        self._maybe_log_val_generations(
+            inputs=sample_inputs, outputs=sample_outputs, scores=sample_scores, images=sample_images
+        )
 
         # dump generations
         val_data_dir = self.config.trainer.get("validation_data_dir", None)
