@@ -76,6 +76,44 @@ logger.setLevel(os.getenv("VERL_LOGGING_LEVEL", "WARN"))
 DEFAULT_ROUTING_CACHE_SIZE = 10000
 
 
+def cap_token_ids(
+    token_ids: list[int],
+    budget: int,
+    *,
+    multimodal: bool,
+    keep: str = "tail",
+    what: str = "prompt",
+    budget_name: str = "budget",
+) -> list[int]:
+    """Cap a token sequence, refusing to slice one that carries multimodal placeholders.
+
+    Placeholder tokens stand 1:1 for the features in ``multi_modal_inputs``. Slicing a
+    sequence that contains them breaks that correspondence, and nothing downstream
+    notices: position ids are rebuilt from the feature grid, so the model is handed a
+    sequence and a position tensor of different lengths and dies inside the attention
+    with a shape error naming neither the prompt nor the image. Raising here is the
+    difference between a configuration error and an afternoon.
+
+    ``keep`` is ``"tail"`` for prompts, which drop their oldest context, and ``"head"``
+    for responses, which are cut off at the end.
+    """
+    if len(token_ids) <= budget:
+        return token_ids
+    if multimodal:
+        raise ValueError(
+            f"Multimodal {what} produced {len(token_ids)} tokens, exceeding "
+            f"{budget_name}={budget}. Truncating multimodal token sequences corrupts "
+            f"vision/audio feature alignment, so this is treated as a configuration "
+            f"error. Reduce the multimodal input size (e.g. ``total_pixels`` / "
+            f"``max_pixels`` / fps / number of frames), shorten the episode, or "
+            f"increase ``{budget_name}``."
+        )
+    logger.warning(
+        "%s of %d tokens exceeds %s=%d; truncating.", what.capitalize(), len(token_ids), budget_name, budget
+    )
+    return token_ids[-budget:] if keep == "tail" else token_ids[:budget]
+
+
 class AgentLoopMetrics(BaseModel):
     """Agent loop performance metrics."""
 
@@ -335,27 +373,14 @@ class AgentLoopBase(ABC):
         # Mirror the response-side ``response_ids[:response_length]`` cap on the prompt side:
         # every prompt produced by the agent loop must fit in ``rollout.prompt_length`` so that
         # ``_pad_token_ids`` (and downstream ``torch.cat``) can rely on uniform shapes.
-        # Multimodal prompts cannot be sliced here because placeholder tokens must remain
-        # aligned 1:1 with ``multi_modal_inputs`` features, so we fail loudly instead.
-        prompt_length = self.rollout_config.prompt_length
-        if len(prompt_ids) > prompt_length:
-            if images or videos or audios:
-                raise ValueError(
-                    f"Multimodal prompt produced {len(prompt_ids)} tokens, exceeding "
-                    f"rollout.prompt_length={prompt_length}. Truncating multimodal token "
-                    f"sequences corrupts vision/audio feature alignment, so this is treated "
-                    f"as a configuration error. Reduce the multimodal input size "
-                    f"(e.g. ``total_pixels`` / ``max_pixels`` / fps / number of frames) or "
-                    f"increase ``rollout.prompt_length``."
-                )
-            logger.warning(
-                "Prompt of %d tokens exceeds rollout.prompt_length=%d; left-truncating.",
-                len(prompt_ids),
-                prompt_length,
-            )
-            prompt_ids = prompt_ids[-prompt_length:]
-
-        return prompt_ids
+        return cap_token_ids(
+            prompt_ids,
+            self.rollout_config.prompt_length,
+            multimodal=bool(images or videos or audios),
+            keep="tail",
+            what="prompt",
+            budget_name="rollout.prompt_length",
+        )
 
     @abstractmethod
     async def run(self, sampling_params: dict[str, Any], **kwargs) -> AgentLoopOutput:
