@@ -737,7 +737,10 @@ class RayPPOTrainer:
             outputs=sample_outputs,
             scores=sample_scores,
             images=sample_images,
-            extras=sample_extras,
+            # reward_extra_infos_dict rides along: it is aligned with the samples and
+            # carries whatever the environment reported per row, traj_success included,
+            # which is the number worth seeing next to a transcript.
+            extras={**sample_extras, **reward_extra_infos_dict},
         )
 
         # dump generations
