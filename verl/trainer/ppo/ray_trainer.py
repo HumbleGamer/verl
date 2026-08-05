@@ -290,7 +290,7 @@ def compute_advantage(
 # A row is one model call; an episode may be several, across more than one conversation
 # when the context is compacted, and only the loop knows which rows belong together.
 # Absent columns are collected as None, so a loop that publishes none is unaffected.
-EXTRA_LOG_COLUMNS = ("group_idx", "traj_idx", "turn_idx", "conversation_id")
+EXTRA_LOG_COLUMNS = ("group_idx", "traj_idx", "turn_idx", "conversation_id", "data_source")
 
 
 @deprecated(
