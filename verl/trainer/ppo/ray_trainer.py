@@ -292,7 +292,7 @@ def compute_advantage(
 # Absent columns are collected as None, so a loop that publishes none is unaffected.
 EXTRA_LOG_COLUMNS = (
     "episode_id", "group_idx", "traj_idx", "turn_idx", "conversation_id", "data_source",
-    "episode_turns", "n_conversations",
+    "episode_turns", "n_conversations", "turn_records",
 )
 
 
