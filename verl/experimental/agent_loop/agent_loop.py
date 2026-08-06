@@ -1011,10 +1011,14 @@ class AgentLoopWorker:
             # response earned what -- and with it any credit assignment finer than the
             # turn. Rows that publish nothing keep the scalar placement above.
             for b, item in enumerate(inputs):
-                vector = (getattr(item, "extra_fields", None) or {}).get("token_level_scores")
+                vector = (getattr(item, "extra_fields", None) or {}).get("per_token_reward")
                 if not vector:
                     continue
                 width = min(len(vector), rm_scores.size(1))
+                # Clear the row first. The scalar above was placed at the last real
+                # position; a vector shorter than that would leave it in place and the
+                # row's reward would be counted twice.
+                rm_scores[b].zero_()
                 rm_scores[b, :width] = torch.tensor(vector[:width], dtype=torch.float32)
             batch["rm_scores"] = rm_scores
 
