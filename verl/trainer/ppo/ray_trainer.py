@@ -286,20 +286,18 @@ def compute_advantage(
     return data
 
 
-# Columns an agent loop may publish that a validation logger can use to reassemble rows.
-# A row is one model call; an episode may be several, across more than one conversation
-# when the context is compacted, and only the loop knows which rows belong together.
-# Absent columns are collected as None, so a loop that publishes none is unaffected.
-EXTRA_LOG_COLUMNS = (
-    "episode_id", "group_idx", "traj_idx", "turn_idx", "conversation_id", "data_source",
-    "episode_turns", "n_conversations", "conversations", "response_spans", "turns_here",
-)
 
 
 @deprecated(
     "main_ppo.py is deprecated, and wil be replaced by main_ppo_sync.py in v0.8.0, please use main_ppo_sync.py instead."
 )
 class RayPPOTrainer:
+    #: Extra ``non_tensor_batch`` columns to collect per validation sample and hand to
+    #: ``_maybe_log_val_generations``. Empty here; a subclass that logs something richer
+    #: than text names what it needs. A list needing one more column should not need a
+    #: change in this file.
+    val_log_columns: tuple[str, ...] = ()
+
     """Distributed PPO trainer using Ray for scalable reinforcement learning.
 
     This trainer orchestrates distributed PPO training across multiple nodes and GPUs,
@@ -564,12 +562,13 @@ class RayPPOTrainer:
                 dump_path=rollout_data_dir,
             )
 
-    def _maybe_log_val_generations(self, inputs, outputs, scores, images=None, extras=None):
+    def _maybe_log_val_generations(self, inputs, outputs, scores, extras=None):
         """Log a table of validation samples to the configured logger (wandb or swanlab)
 
-        ``images`` and ``extras`` are accepted and ignored here so that a subclass can
-        render its own view -- grouping rows back into episodes, say -- without also
-        owning a copy of ``_validate``.
+        ``extras`` carries the columns named in ``val_log_columns`` plus the environment's
+        own per-sample metrics. Ignored here; it exists so a subclass can render its own
+        view -- grouping rows back into episodes, say -- without owning a copy of
+        ``_validate``.
         """
 
         generations_to_log = self.config.trainer.log_val_generations
@@ -628,13 +627,11 @@ class RayPPOTrainer:
         sample_scores = []
         sample_turns = []
         sample_uids = []
-        # Frames an agent loop chose to surface, if any. For a task whose observations
-        # are rendered, the text alone does not say what the model was looking at.
-        sample_images = []
-        # Whatever an agent loop published that a logger might want to reassemble rows
-        # into something readable. One row is one model call; an episode can be several,
-        # and only the loop knows which belong together.
-        sample_extras = {k: [] for k in EXTRA_LOG_COLUMNS}
+        # Whatever an agent loop published that a logger might want: the frames the
+        # model was looking at, and whichever columns say how rows fit back together.
+        # One row is one model call; an episode can be several, and only the loop knows
+        # which belong together.
+        sample_extras: dict[str, list] = {k: [] for k in self.val_log_columns}
 
         for test_data in self.val_dataloader:
             test_batch = DataProto.from_single_dict(test_data)
@@ -700,19 +697,12 @@ class RayPPOTrainer:
             sample_inputs.extend(input_texts)
             sample_uids.extend(test_batch.non_tensor_batch["uid"])
 
-            batch_images = test_batch.non_tensor_batch.get("image_data")
-            if batch_images is None:
-                sample_images.extend([None] * len(output_texts))
-            else:
-                sample_images.extend(
-                    batch_images.tolist() if hasattr(batch_images, "tolist") else list(batch_images)
-                )
-            for col in EXTRA_LOG_COLUMNS:
+            for col in self.val_log_columns:
                 vals = test_batch.non_tensor_batch.get(col)
-                if vals is None:
-                    sample_extras[col].extend([None] * len(output_texts))
-                else:
-                    sample_extras[col].extend(vals.tolist() if hasattr(vals, "tolist") else list(vals))
+                sample_extras[col].extend(
+                    [None] * len(output_texts) if vals is None
+                    else (vals.tolist() if hasattr(vals, "tolist") else list(vals))
+                )
 
             # evaluate using reward_function
             reward_tensor, reward_extra_info = extract_reward(test_batch)
@@ -735,14 +725,13 @@ class RayPPOTrainer:
 
             data_source_lst.append(test_batch.non_tensor_batch.get("data_source", ["unknown"] * reward_tensor.shape[0]))
 
+        # reward_extra_infos_dict rides along: it is aligned with the samples and carries
+        # whatever the environment reported per row, traj_success included, which is the
+        # number worth seeing next to a transcript.
         self._maybe_log_val_generations(
             inputs=sample_inputs,
             outputs=sample_outputs,
             scores=sample_scores,
-            images=sample_images,
-            # reward_extra_infos_dict rides along: it is aligned with the samples and
-            # carries whatever the environment reported per row, traj_success included,
-            # which is the number worth seeing next to a transcript.
             extras={**sample_extras, **reward_extra_infos_dict},
         )
 
