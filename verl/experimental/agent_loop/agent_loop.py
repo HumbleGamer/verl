@@ -1004,6 +1004,18 @@ class AgentLoopWorker:
             response_length = attention_mask[:, prompt_length:].sum(dim=1) - 1
             rm_scores = torch.zeros_like(response_mask, dtype=torch.float32)
             rm_scores[torch.arange(response_mask.size(0)), response_length] = torch.tensor(scores, dtype=torch.float32)
+
+            # An agent loop that scored individual spans of a response can publish the
+            # whole vector instead of a single number. Without this the vector is summed
+            # to a scalar and written at the last token, which erases which part of the
+            # response earned what -- and with it any credit assignment finer than the
+            # turn. Rows that publish nothing keep the scalar placement above.
+            for b, item in enumerate(inputs):
+                vector = (getattr(item, "extra_fields", None) or {}).get("token_level_scores")
+                if not vector:
+                    continue
+                width = min(len(vector), rm_scores.size(1))
+                rm_scores[b, :width] = torch.tensor(vector[:width], dtype=torch.float32)
             batch["rm_scores"] = rm_scores
 
         non_tensor_batch = {
