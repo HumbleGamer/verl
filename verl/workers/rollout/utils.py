@@ -105,8 +105,15 @@ def dedup_multimodal_placeholder_tokens(prompt_ids: list[int], processor):
     the model, with nothing naming the prompt.
 
     Keyed on the placeholder ids the processor declares rather than on its class name,
-    so this holds for any VLM -- the token differs per family (``<|image_pad|>``,
-    ``<IMG_CONTEXT>``, ``<image>``) but the convention does not.
+    so it holds wherever one image expands to one *contiguous* run -- Qwen2-VL,
+    Qwen2.5-VL and InternVL among them.
+
+    It does not hold everywhere, and the failure is silent either way. Pixtral separates
+    rows with ``[IMG_BREAK]``, so the run is interrupted and one image is left with one
+    placeholder per row. Llama-4 declares ``image_token_id`` for ``<|image|>``, a single
+    non-repeated marker, while the repeated placeholder is ``<|patch|>`` -- so this is a
+    no-op and the doubly-expanded prompt reaches the engine, which is the thing the
+    function exists to prevent. Either family needs its own rule.
     """
     if processor is None:
         return prompt_ids
