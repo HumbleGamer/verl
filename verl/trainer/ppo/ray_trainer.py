@@ -286,16 +286,15 @@ def compute_advantage(
     return data
 
 
-
-
 @deprecated(
     "main_ppo.py is deprecated, and wil be replaced by main_ppo_sync.py in v0.8.0, please use main_ppo_sync.py instead."
 )
 class RayPPOTrainer:
     #: Extra ``non_tensor_batch`` columns to collect per validation sample and hand to
-    #: ``_maybe_log_val_generations``. Empty here; a subclass that logs something richer
-    #: than text names what it needs. A list needing one more column should not need a
-    #: change in this file.
+    #: ``_maybe_log_val_generations``. Empty here: verl logs input/output/score, and what
+    #: else is worth logging is a property of the loop that produced the rows, not of the
+    #: trainer. A subclass names them; ``_validate`` collects whichever are present, so
+    #: wanting one more column does not need a change in this file.
     val_log_columns: tuple[str, ...] = ()
 
     """Distributed PPO trainer using Ray for scalable reinforcement learning.
@@ -562,7 +561,7 @@ class RayPPOTrainer:
                 dump_path=rollout_data_dir,
             )
 
-    def _maybe_log_val_generations(self, inputs, outputs, scores, extras=None):
+    def _maybe_log_val_generations(self, inputs, outputs, scores, extras=None, **kwargs):
         """Log a table of validation samples to the configured logger (wandb or swanlab)
 
         ``extras`` carries the columns named in ``val_log_columns`` plus the environment's

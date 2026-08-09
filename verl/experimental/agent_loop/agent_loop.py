@@ -84,6 +84,8 @@ def cap_token_ids(
     keep: str = "tail",
     what: str = "prompt",
     budget_name: str = "budget",
+    on_overflow: str = "truncate",
+    hint: str = "",
 ) -> list[int]:
     """Cap a token sequence, refusing to slice one that carries multimodal placeholders.
 
@@ -96,6 +98,13 @@ def cap_token_ids(
 
     ``keep`` is ``"tail"`` for prompts, which drop their oldest context, and ``"head"``
     for responses, which are cut off at the end.
+
+    ``on_overflow="raise"`` refuses to truncate text as well. Trimming a dataset prompt to
+    fit is ordinary, which is why it stays the default; trimming an *episode* is not. Both
+    directions destroy something the run depends on -- a tail cut drops the system prompt
+    and the model trains on a sequence with no instructions, a head cut drops the closing
+    turns along with the rewards earned there, and the spans indexing them are clipped
+    away with it. Neither raises where it happens, and the loss stays finite either way.
     """
     if len(token_ids) <= budget:
         return token_ids
@@ -107,6 +116,13 @@ def cap_token_ids(
             f"error. Reduce the multimodal input size (e.g. ``total_pixels`` / "
             f"``max_pixels`` / fps / number of frames), shorten the episode, or "
             f"increase ``{budget_name}``."
+        )
+    if on_overflow == "raise":
+        lost = "oldest context, including the system prompt" if keep == "tail" else "closing turns and their rewards"
+        raise ValueError(
+            f"{what.capitalize()} of {len(token_ids)} tokens exceeds {budget_name}={budget}. "
+            f"Truncating would silently drop the {lost}, so this is treated as a "
+            f"configuration error rather than trained on.{hint}"
         )
     logger.warning(
         "%s of %d tokens exceeds %s=%d; truncating.", what.capitalize(), len(token_ids), budget_name, budget
