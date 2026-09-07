@@ -525,10 +525,10 @@ class DataParallelPPOActor(BasePPOActor):
                         ce_loss = agg_loss(loss_mat=-log_prob, loss_mask=ce_mask, loss_agg_mode=loss_agg_mode)
                         if ce_coef > 0:
                             policy_loss = policy_loss + ce_coef * ce_loss
-                        n_ce = int(ce_mask.sum().item())
-                        if n_ce > 0:
-                            micro_batch_metrics["actor/transitions_ce"] = ce_loss.detach().item()  # nats/token
-                        micro_batch_metrics["actor/transitions_ce_tokens"] = n_ce
+                        # Always append (reduce_metrics needs equal-length lists across ranks);
+                        # a micro-batch without GT tokens contributes exactly 0.0 here.
+                        micro_batch_metrics["actor/transitions_ce"] = ce_loss.detach().item()  # nats/token
+                        micro_batch_metrics["actor/transitions_ce_tokens"] = int(ce_mask.sum().item())
                         micro_batch_metrics["actor/transitions_ce_coef"] = ce_coef
 
                     if self.config.use_dynamic_bsz:
