@@ -393,6 +393,11 @@ class DataParallelPPOActor(BasePPOActor):
         # Include rollout_log_probs for computing rollout_corr metrics in bypass mode
         if "rollout_log_probs" in data.batch.keys():
             select_keys.append("rollout_log_probs")
+        # vagen tfce arm: driver-built (B, L) mask of teacher-forced GT tokens that get a
+        # cross-entropy term (coefficient in meta_info["transitions_ce_coef"]). Absent
+        # in every other run, so nothing below changes for them.
+        if "transitions_ce_mask" in data.batch.keys():
+            select_keys.append("transitions_ce_mask")
 
         has_multi_modal_inputs = "multi_modal_inputs" in data.non_tensor_batch.keys()
         non_tensor_select_keys = ["multi_modal_inputs"] if has_multi_modal_inputs else []
@@ -508,6 +513,23 @@ class DataParallelPPOActor(BasePPOActor):
                         policy_loss = policy_loss + kl_loss * self.config.kl_loss_coef
                         micro_batch_metrics["actor/kl_loss"] = kl_loss.detach().item() * loss_scale_factor
                         micro_batch_metrics["actor/kl_coef"] = self.config.kl_loss_coef
+
+                    # vagen tfce arm: CE on the GT tokens the env spliced into the response
+                    # (response_mask 0 there, so PG/entropy never touch them). log_prob already
+                    # covers every response position, so this costs no extra forward. The CE
+                    # metric is logged whenever the mask is present; the gradient only when
+                    # the (per-step, cosine-decayed) coefficient is positive.
+                    ce_mask = model_inputs.get("transitions_ce_mask", None)
+                    if ce_mask is not None:
+                        ce_coef = float(data.meta_info.get("transitions_ce_coef", 0.0))
+                        ce_loss = agg_loss(loss_mat=-log_prob, loss_mask=ce_mask, loss_agg_mode=loss_agg_mode)
+                        if ce_coef > 0:
+                            policy_loss = policy_loss + ce_coef * ce_loss
+                        n_ce = int(ce_mask.sum().item())
+                        if n_ce > 0:
+                            micro_batch_metrics["actor/transitions_ce"] = ce_loss.detach().item()  # nats/token
+                        micro_batch_metrics["actor/transitions_ce_tokens"] = n_ce
+                        micro_batch_metrics["actor/transitions_ce_coef"] = ce_coef
 
                     if self.config.use_dynamic_bsz:
                         # relative to the dynamic bsz
