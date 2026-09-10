@@ -91,4 +91,13 @@ def set_expandable_segments(enable: bool) -> None:
         enable (bool): Whether to enable expandable segments. Used to avoid OOM.
     """
     if is_cuda_available:
+        # VERL_DISABLE_EXPANDABLE_SEGMENTS=1: never enable expandable segments.
+        # Needed for single-GPU colocated sglang rollout on hosts whose kernel
+        # lacks pidfd_open (e.g. 4.18): with world_size 1 the FSDP parameter
+        # storage itself is handed to sglang over CUDA IPC, and storage
+        # allocated in expandable segments cannot be shared there.
+        import os
+
+        if os.environ.get("VERL_DISABLE_EXPANDABLE_SEGMENTS") == "1":
+            enable = False
         torch.cuda.memory._set_allocator_settings(f"expandable_segments:{enable}")
